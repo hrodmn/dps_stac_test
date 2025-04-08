@@ -47,18 +47,22 @@ if __name__ == "__main__":
         description="Runs gdal_translate -outsize to reduce input size by n%"
     )
     parse.add_argument("--input_file", help="Input file to use", required=True)
-    parse.add_argument("--output_file", help="Output file to write", required=True)
     parse.add_argument("--outsize", help="Reduction size", required=True)
     parse.add_argument("--collection_id", help="STAC collection ID", required=True)
     args = parse.parse_args()
+
     env_check()
+
+    output_file = f"output/resized_{args.outsize}.tif"
     exit_code, output = gdal_translate(args.input_file, args.output_file, args.outsize)
+
     if exit_code != 0:
         print(f"gdal_translate failed with a non-zero exit code: {exit_code}")
         exit(exit_code)
+
     print("writing STAC metadata")
     generate_stac(
-        args.output_file,
-        Path(args.output_file).with_suffix(".json"),
+        output_file,
+        "output/item.json",
         args.collection_id,
     )
