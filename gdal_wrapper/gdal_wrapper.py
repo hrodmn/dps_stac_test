@@ -58,5 +58,7 @@ if __name__ == "__main__":
         exit(exit_code)
     print("writing STAC metadata")
     generate_stac(
-        args.output_file, Path(args.output_file).with_suffix(".json"), collection_id
+        args.output_file,
+        Path(args.output_file).with_suffix(".json"),
+        args.collection_id,
     )

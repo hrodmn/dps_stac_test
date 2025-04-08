@@ -28,6 +28,7 @@ input_filename=$(ls -d input/*)
 # Read the positional argument as defined in the algorithm registration here
 output_filename=$1
 reduction_size=$2
+collection_id=$3
 
 # Call the script using the absolute paths
 # Use the updated environment when calling 'conda run'
@@ -35,4 +36,4 @@ reduction_size=$2
 # Any output written to the stdout and stderr streams will be automatically captured and placed in the output dir
 # echo conda run --live-stream --name vanilla python ${basedir}/gdal_wrapper.py --input_file ${input_filename} --output_file output/${output_filename} --outsize ${reduction_size}
 
-conda run --live-stream --name python python ${basedir}/gdal_wrapper.py --input_file ${input_filename} --output_file output/${output_filename} --outsize ${reduction_size}
+conda run --live-stream --name python python ${basedir}/gdal_wrapper.py --input_file ${input_filename} --output_file output/${output_filename} --outsize ${reduction_size} --collection_id ${collection_id}
