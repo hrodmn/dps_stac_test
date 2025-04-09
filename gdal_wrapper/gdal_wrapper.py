@@ -1,10 +1,15 @@
 import argparse
-import json
 import subprocess
 from pathlib import Path
 
-# Even though for this example we dont require the python gdal client, we import it to ensure gdal is installed
-from osgeo import gdal
+from pystac import (
+    Catalog,
+    CatalogType,
+    Collection,
+    Extent,
+    SpatialExtent,
+    TemporalExtent,
+)
 from rio_stac.stac import create_stac_item
 
 
@@ -23,25 +28,6 @@ def gdal_translate(input_filename, output_filename, reduction_percent):
     return proc.returncode, output_filename
 
 
-def generate_stac(
-    asset_filename: str, output_item_json: str | Path, collection_id: str
-):
-    """Create a STAC item from a single asset on disk and write to JSON"""
-    item = create_stac_item(
-        source=asset_filename,
-        collection=collection_id,
-        # override asset_href to be relative to the output directory
-        asset_href=asset_filename.replace("output/", ""),
-    )
-    with open(output_item_json, "w") as f:
-        f.write(json.dumps(item.to_dict()))
-
-
-def env_check():
-    # Include any code here that might need to check for the correct env setup.
-    print("Installed GDAL Version: " + gdal.__version__)
-
-
 if __name__ == "__main__":
     parse = argparse.ArgumentParser(
         description="Runs gdal_translate -outsize to reduce input size by n%"
@@ -51,18 +37,43 @@ if __name__ == "__main__":
     parse.add_argument("--collection_id", help="STAC collection ID", required=True)
     args = parse.parse_args()
 
-    env_check()
-
     output_file = f"output/resized_{args.outsize}.tif"
-    exit_code, output = gdal_translate(args.input_file, args.output_file, args.outsize)
+    exit_code, output = gdal_translate(args.input_file, output_file, args.outsize)
 
     if exit_code != 0:
         print(f"gdal_translate failed with a non-zero exit code: {exit_code}")
         exit(exit_code)
 
     print("writing STAC metadata")
-    generate_stac(
-        output_file,
-        "output/item.json",
-        args.collection_id,
+    catalog = Catalog(
+        id="DPS",
+        description="DPS",
+        catalog_type=CatalogType.SELF_CONTAINED,
+    )
+    collection = Collection(
+        id=args.collection_id,
+        description="description",
+        title=args.collection_id,
+        extent=Extent(
+            spatial=SpatialExtent(bboxes=[[-180, -90, 180, 90]]),
+            temporal=TemporalExtent([[None, None]]),
+        ),
+    )
+    catalog.add_child(collection)
+    item = create_stac_item(
+        source=output_file,
+        collection=collection.id,
+        id=Path(args.input_file).stem,
+        # override asset_href to be relative to the output directory
+        asset_href=output_file.replace("output/", ""),
+        with_proj=True,
+    )
+    item.set_self_href("output/item.json")
+
+    collection.add_item(item)
+    item.make_asset_hrefs_relative()
+
+    catalog.normalize_and_save(
+        root_href="output/",
+        catalog_type=CatalogType.SELF_CONTAINED,
     )
