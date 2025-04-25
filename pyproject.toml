@@ -1,0 +1,20 @@
+[project]
+name = "dps-stac-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "rio-stac>=0.10.1",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.2.0",
+    "ruff>=0.11.7",
+]
+
+[tool.ruff]
+
+[tool.ruff.format]

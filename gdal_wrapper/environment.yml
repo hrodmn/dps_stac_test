@@ -1,7 +1,0 @@
-name: python
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - gdal
-  - rio-stac
