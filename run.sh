@@ -34,4 +34,8 @@ reduction_size=$1
 # This lets us run the same way in a Terminal as in DPS
 # Any output written to the stdout and stderr streams will be automatically captured and placed in the output dir
 
+# unset PROJ env vars
+unset PROJ_LIB
+unset PROJ_DATA
+
 UV_PROJECT=${basedir} uv run ${basedir}/main.py --input_file ${input_filename} --output_dir=${OUTPUT_DIR} --outsize ${reduction_size} 
