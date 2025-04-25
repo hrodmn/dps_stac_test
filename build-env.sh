@@ -10,6 +10,7 @@ command -v curl >/dev/null 2>&1 || {
 
 # install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
 
 # Get current location of build script
 basedir=$( cd "$(dirname "$0")" ; pwd -P )
