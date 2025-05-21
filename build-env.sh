@@ -5,7 +5,7 @@ set -euo pipefail
 # install curl if not available
 command -v curl >/dev/null 2>&1 || { 
     echo "Installing curl..."
-    apt-get update && apt-get install -y curl
+    sudo apt-get update && sudo apt-get install -y curl
 }
 
 # install uv
