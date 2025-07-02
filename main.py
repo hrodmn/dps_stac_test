@@ -1,4 +1,5 @@
 import argparse
+import uuid
 from pathlib import Path
 
 import rasterio
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     )
     item = create_stac_item(
         source=output_file,
-        id=Path(args.input_file).stem,
+        id=str(uuid.uuid4()),
         # override asset_href to be relative to the output directory
         asset_href=str(output_file).replace(f"{args.output_dir}/", ""),
         with_proj=True,
